@@ -1,38 +1,39 @@
-<script setup>
+<script setup lang="ts">
 import { ref, defineAsyncComponent } from 'vue'
+import ProductType from './ProductType'
+import TabsBtnsType from '../refillOrReserve/tabsBtnsType'
 const Reservations = defineAsyncComponent(() => import('../reservation/Reservations.vue'));
 const BuyProduct = defineAsyncComponent(() => import('./BuyProduct.vue'));
-const RefillOrReserve = defineAsyncComponent(() => import('../RefillOrReserve.vue'));
+const RefillOrReserve = defineAsyncComponent(() => import('../refillOrReserve/RefillOrReserve.vue'));
 
-defineProps({
-    product: {
-        type: Object,
-        required: true
-    }
-})
-const tabsBtns = ref([
+defineProps<{
+    product: ProductType
+}>()
+
+const tabsBtns = ref<TabsBtnsType[]>([
     { value: 2, color: 'info', icon: 'mdi-bookmark-plus-outline' },
     { value: 3, color: 'success', icon: 'mdi-currency-usd' },
     { value: 4, color: 'purple', icon: 'mdi-database-plus-outline' }
 ])
 const show = ref(false)
-const tabs = ref(null)
+const tabs = ref<null | number>(null)
 
-const showReservation = (val) => {
+const showReservation = (val: boolean): void => {
     show.value = val;
 }
 
 const stockChanged = ref(false)
-const emit = defineEmits(['editStockAmount'])
-const newStockAmount = (val) => {
+const emit = defineEmits<{
+    (e: 'editStockAmount', val: ProductType): void
+}>()
+const newStockAmount = (val: ProductType): void => {
     emit('editStockAmount', val)
     showReservation(false)
     setTimeout(() => {
         stockChanged.value = false
-    }, 3000);
+    }, 3000)
     stockChanged.value = true
 }
-
 </script>
 
 
@@ -80,7 +81,7 @@ const newStockAmount = (val) => {
                     @newStockAmount="newStockAmount" />
                 <BuyProduct :tabValue="3" :stock="product.stock" :productId="product.id"
                     @newStockAmount="newStockAmount" />
-                <RefillOrReserve :tabValue="4" :productId="product.id" :actionType="'refill'"
+                <RefillOrReserve :tabValue="4" :productId="product.id" :actionType="'refill'" :stock="product.stock"
                     @newStockAmount="newStockAmount" />
             </v-window>
         </v-card>

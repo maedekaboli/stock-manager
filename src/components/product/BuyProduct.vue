@@ -1,31 +1,25 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import axios from '../../api'
+import ProductType from './ProductType'
 
-const props = defineProps({
-    tabValue: {
-        type: Number,
-        required: true
-    },
-    stock: {
-        type: Number,
-        required: true
-    },
-    productId: {
-        type: Number,
-        required: true
-    }
-})
-const emit = defineEmits(['newStockAmount'])
+const props = defineProps<{
+    tabValue: number,
+    stock: number,
+    productId: number
+}>()
 
+const emit = defineEmits<{
+    (e: 'newStockAmount', val: ProductType): void
+}>()
 const stockAmount = ref(props.stock)
 
 const loading = ref(false)
-const buyProduct = () => {
+const buyProduct = ():void => {
     loading.value = true
-    axios.put(`${props.productId}/buy?amount=${stockAmount.value}`).then(res => {
+    axios.put<ProductType>(`${props.productId}/buy?amount=${stockAmount.value}`).then(res => {
         loading.value = false
-        emit('newStockAmount', { newStock: res?.data?.stock, id: props.productId, reservations: res?.data?.reservations })
+        emit('newStockAmount', { stock: res?.data?.stock, id: props.productId, reservations: res?.data?.reservations })
     }).catch(err => {
         loading.value = false
     })

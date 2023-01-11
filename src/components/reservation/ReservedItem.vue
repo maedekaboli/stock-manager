@@ -1,14 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
+import ReservedItemType from './ReservedItemType'
 
-const props = defineProps({
-    reservedItem: {
-        type: Object,
-        required: true
-    }
-})
 
-const reservedItemDate = computed(() => {
+const props = defineProps<{
+    reservedItem: ReservedItemType
+}>()
+
+const reservedItemDate = computed((): string => {
     return (new Date(props.reservedItem.pointOfTime)).toLocaleString()
 })
 

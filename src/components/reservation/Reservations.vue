@@ -1,17 +1,12 @@
-<script setup>
-import {  defineAsyncComponent } from 'vue'
+<script setup lang="ts">
+import { defineAsyncComponent } from 'vue'
+import ReservedItemType from './ReservedItemType';
 const ReservedItem = defineAsyncComponent(() => import('./ReservedItem.vue'));
 
-defineProps({
-    tabValue: {
-        type: Number,
-        required: true
-    },
-    reservations: {
-        type: Array,
-        required: true
-    }
-})
+defineProps<{
+    tabValue: number
+    reservations: ReservedItemType[]
+}>()
 </script>
 
 

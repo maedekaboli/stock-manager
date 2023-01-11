@@ -1,41 +1,33 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import axios from '../api'
+import axios from '../../api'
+import ProductType from '../product/ProductType'
 
-const props = defineProps({
-    tabValue: {
-        type: Number,
-        required: true
-    },
-    stock: {
-        type: Number,
-        required: false
-    },
-    productId: {
-        type: Number,
-        required: true
-    },
-    actionType: {
-        type: String,
-        required: true
-    }
-})
-const emit = defineEmits(['newStockAmount'])
+const props = defineProps<{
+    tabValue: number,
+    stock: number,
+    productId: number,
+    actionType: string
+}>()
+
+const emit = defineEmits<{
+    (e: 'newStockAmount', val: ProductType): void
+}>()
 const stockAmount = ref(1)
 const snackbar = ref(false)
-const snackbarMsg = ref(null)
+const snackbarMsg = ref<null | string>(null)
 const loading = ref(false)
 
 const submitStock = () => {
-    if (props.actionType == 'reserve' & stockAmount.value > props.stock) {
+    if (props.actionType == 'reserve' && stockAmount.value > props.stock) {
         snackbar.value = true
         snackbarMsg.value = "Reserved amount is greater than current stock amount!"
     }
     else {
         loading.value = true
-        axios.put(`${props.productId}/${props.actionType}?amount=${stockAmount.value}`).then(res => {
+        axios.put<ProductType>(`${props.productId}/${props.actionType}?amount=${stockAmount.value}`).then(res => {
             loading.value = false
-            emit('newStockAmount', { newStock: res?.data?.stock, id: props.productId, reservations: res?.data?.reservations })
+            emit('newStockAmount', { stock: res?.data?.stock, id: props.productId, reservations: res?.data?.reservations })
         }).catch(err => {
             loading.value = false
             snackbar.value = true

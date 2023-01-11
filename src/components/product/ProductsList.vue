@@ -1,13 +1,14 @@
-<script setup>
+<script setup lang="ts">
 import axios from '../../api'
 import { ref, defineAsyncComponent } from 'vue'
+import ProductType from './ProductType';
 const Product = defineAsyncComponent(() => import('./Product.vue'));
 
 const snackbar = ref(false)
-const snackbarMsg = ref(null)
+const snackbarMsg = ref<null | string>(null)
 
-const products = ref([])
-await axios.get().then(res => {
+const products = ref<ProductType[]>([])
+await axios.get<ProductType[]>('').then(res => {
   //because of better UX, data has been sliced
   products.value = res?.data.slice(0, 100)
 }).catch(err => {
@@ -15,10 +16,10 @@ await axios.get().then(res => {
   snackbarMsg.value = err
 })
 
-const editStockAmount = (val) => {
+const editStockAmount = (val: ProductType): void => {
   const foundIndex = products.value.findIndex(x => x.id === val.id);
   const newItem = products.value[foundIndex];
-  products.value[foundIndex] = { ...newItem, stock: val.newStock, reservations: val.reservations }
+  products.value[foundIndex] = { ...newItem, stock: val.stock, reservations: val.reservations }
 }
 </script>
 
